@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<User>> getUsers(){
+    ApiResponse<List<UserResponse>> getUsers(){
 //SecurityContextHolder chua thong tin user dang dang nhap
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -42,15 +42,22 @@ public class UserController {
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
 
-        return ApiResponse.<List<User>>builder()
+        return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
                 .build();
     }
 
     @GetMapping("/{id}")
-    ApiResponse<UserResponse> gerUser(@PathVariable String id){
+    ApiResponse<UserResponse> getUser(@PathVariable String id){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(id))
+                .build();
+    }
+
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getMyInfo(){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
                 .build();
     }
 

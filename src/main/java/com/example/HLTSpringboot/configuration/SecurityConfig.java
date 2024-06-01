@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final String [] PUBLIC_ENDPOINTS ={"/users", "/auth/token", "/auth/introspect"};
@@ -30,25 +32,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-//  chi nhung user co scope_admin moi co the get voi pattern "/users"
-                        .requestMatchers(HttpMethod.GET, "/users")
-//                        goc la hasAuthority("SCOPE_ADMIN) nhung do da custom thanh ROLE_ADMIN nen chuyen thanh nhu duoi
-                        .hasRole(Role.ADMIN.name())
-
                         .anyRequest().authenticated());
 
 // khi cấu hình là oauth2ResourceServer thì cta muốn thực hiện 1 request mà cta cung cấp 1 token vào Bear Tokene
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
                         jwtConfigurer.decoder(jwtDecoder())
-//                                convert SCOPE_ thanh ROLE_
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                );
+//                exception 401
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 // spring sercurity sẽ mặc định bật csrf lên để bảo vệ endpoint khỏi attack nhưng tong trường hợp này ko cần nên tắt
-
-
 
         return httpSecurity.build();
     }
