@@ -11,14 +11,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserMappper {
     User toUser(UserCreationRequest request);
-
-//không mapping filed lastName
-//    @Mapping(target = "lastName",ignore = true)
-
-
-//gán lại giá trị của firstName cho lastName
-//    @Mapping(source = "firstName", target = "lastName")
     UserResponse toUserResponse(User user);
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 
 }
