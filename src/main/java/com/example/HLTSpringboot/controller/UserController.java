@@ -38,7 +38,7 @@ public class UserController {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         log.info("Username: {}", authentication.getName());
-//In ra thong tin cua scope duoc chua trong Authorities
+//In ra thong tin cua scope duoc chua trong Authorities check
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
 

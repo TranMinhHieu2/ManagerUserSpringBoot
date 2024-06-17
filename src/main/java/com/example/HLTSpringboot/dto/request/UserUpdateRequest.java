@@ -1,12 +1,23 @@
 package com.example.HLTSpringboot.dto.request;
 
-import lombok.Data;
+import com.example.HLTSpringboot.validator.DobContraint;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate dob;
+    String password;
+    String firstName;
+    String lastName;
+
+    @DobContraint(min = 18, message = "INVALID_DOB")
+    LocalDate dob;
+    List<String> roles;
 }

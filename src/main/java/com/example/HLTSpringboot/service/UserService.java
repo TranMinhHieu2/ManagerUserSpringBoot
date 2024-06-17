@@ -8,6 +8,7 @@ import com.example.HLTSpringboot.enums.Role;
 import com.example.HLTSpringboot.exception.AppException;
 import com.example.HLTSpringboot.exception.ErrorCode;
 import com.example.HLTSpringboot.mapper.UserMappper;
+import com.example.HLTSpringboot.repository.RoleRepository;
 import com.example.HLTSpringboot.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMappper userMappper;
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request){
@@ -50,6 +52,7 @@ public class UserService {
     }
 
 //    chỉ những ai có role admin mới có thể gọi getUsers sử dụng @PreAuthorize
+//  Với permission thì dùng hasAuthority còn với role thì phải thêm ROLE_ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers(){
         log.info("In method get users");
@@ -77,10 +80,15 @@ public class UserService {
     public UserResponse updateUser(String id, UserUpdateRequest request){
         User user= userRepository.findById(id).orElseThrow(()-> new RuntimeException("user not found"));
         userMappper.updateUser(user,request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles= roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
         return userMappper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String id){
         userRepository.deleteById(id);
     }

@@ -1,6 +1,7 @@
 package com.example.HLTSpringboot.configuration;
 
 import com.example.HLTSpringboot.enums.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +26,11 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String [] PUBLIC_ENDPOINTS ={"/users", "/auth/token", "/auth/introspect"};
-    @Value("${jwt.signerKey}")
-    private String signerKey;
+    private final String [] PUBLIC_ENDPOINTS ={"/users", "/auth/token", "/auth/introspect", "/auth/logout"};
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
@@ -37,7 +40,7 @@ public class SecurityConfig {
 // khi cấu hình là oauth2ResourceServer thì cta muốn thực hiện 1 request mà cta cung cấp 1 token vào Bear Tokene
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
+                        jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
 //                exception 401
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
@@ -53,22 +56,12 @@ public class SecurityConfig {
     JwtAuthenticationConverter jwtAuthenticationConverter(){
 //        custome SCOPE_ thanh ROLE_
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter=new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
         return jwtAuthenticationConverter;
-    }
-
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec=new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build()
-                ;
     }
 
 //    tao bean để  chuyển hàm thành biến đưa vào application context

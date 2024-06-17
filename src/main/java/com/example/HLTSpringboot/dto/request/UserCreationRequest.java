@@ -1,5 +1,6 @@
 package com.example.HLTSpringboot.dto.request;
 
+import com.example.HLTSpringboot.validator.DobContraint;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
 
+    @DobContraint(min = 18, message = "INVALID_DOB")
     LocalDate dob;
 
 

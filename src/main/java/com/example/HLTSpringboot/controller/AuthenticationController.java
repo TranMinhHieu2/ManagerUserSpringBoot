@@ -3,6 +3,7 @@ package com.example.HLTSpringboot.controller;
 import com.example.HLTSpringboot.dto.request.ApiResponse;
 import com.example.HLTSpringboot.dto.request.AuthenticationRequest;
 import com.example.HLTSpringboot.dto.request.IntrospectRequest;
+import com.example.HLTSpringboot.dto.request.LogoutRequest;
 import com.example.HLTSpringboot.dto.response.AuthenticationResponse;
 import com.example.HLTSpringboot.dto.response.IntrospectResponse;
 import com.example.HLTSpringboot.service.AuthenticationService;
@@ -34,4 +35,10 @@ public class AuthenticationController {
         return ApiResponse.<IntrospectResponse>builder().result(result).build();
     }
 
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder().build();
+    }
 }
