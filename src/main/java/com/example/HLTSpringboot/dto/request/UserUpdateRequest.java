@@ -1,11 +1,12 @@
 package com.example.HLTSpringboot.dto.request;
 
-import com.example.HLTSpringboot.validator.DobContraint;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import com.example.HLTSpringboot.validator.DobContraint;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +20,6 @@ public class UserUpdateRequest {
 
     @DobContraint(min = 18, message = "INVALID_DOB")
     LocalDate dob;
+
     List<String> roles;
 }

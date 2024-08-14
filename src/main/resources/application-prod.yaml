@@ -1,0 +1,5 @@
+
+jwt:
+#  signerKey: "C8avbmnK5nHCu+F2B7dywUUvBqWw8J7eX+qK9jB4e+WQ30FwTF/qNVTerPjfTaGz" -- VARIABLE ENVIROMENT
+  valid-duration: 7200 # in second
+  refreshable-duration: 72000 # in second

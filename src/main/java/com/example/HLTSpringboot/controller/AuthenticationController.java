@@ -1,19 +1,18 @@
 package com.example.HLTSpringboot.controller;
 
-import com.example.HLTSpringboot.dto.request.ApiResponse;
-import com.example.HLTSpringboot.dto.request.AuthenticationRequest;
-import com.example.HLTSpringboot.dto.request.IntrospectRequest;
-import com.example.HLTSpringboot.dto.request.LogoutRequest;
+import java.text.ParseException;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.example.HLTSpringboot.dto.request.*;
 import com.example.HLTSpringboot.dto.response.AuthenticationResponse;
 import com.example.HLTSpringboot.dto.response.IntrospectResponse;
 import com.example.HLTSpringboot.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,9 +35,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
-            throws ParseException, JOSEException {
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
 }
